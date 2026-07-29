@@ -1,0 +1,8 @@
+# CheckM2 needs its own environment: its releases pin either python<3.9 or
+# python>3.12
+name: checkm2
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - checkm2=1.1.0
