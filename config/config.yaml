@@ -1,2 +1,52 @@
 # pipeline configuration
 # Override any of those on the command line with --config key=value
+
+## input/output
+samples_sheet: "samples.tsv" # TSV with columns 'sample' (sample name) and 'fastq' (path)
+
+outdir: "pipeline-out" # output directory
+
+## resources
+threads: 16
+
+## QC (00-QC)
+skip_host_removal: false # runs right after Chopper filtering
+host_index:
+  "" # hostile reference index name (`hostile index list`) or path to a
+  # custom index; empty = hostile's own default human reference
+chopper_min_quality: 12
+chopper_min_length: 1000
+
+## assembly (01-LongAssemblies)
+## Options: metaflye | nanomdbg | myloasm
+assemblers: ["myloasm"]
+
+## polishing (02-Polishing)
+medaka_model: "r1041_e82_400bps_sup_v4.2.0" # must match the Dorado basecalling model; list available: medaka tools list_models
+
+## binning (03-LongBins)
+semibin_env:
+  "human_gut" # SemiBin2 pretrained environment model
+  # -- options: human_gut dog_gut ocean soil cat_gut human_oral mouse_gut pig_gut built_environment wastewater chicken_caecum global
+use_comebin: false
+
+## bin refinement (DAS_Tool)
+dastool_score_threshold: 0.5
+
+## bin QC (04-BinQC, final output in top-level Final-bins/)
+## checkm2_db / gunc_db / gtdbtk_data_path default to download_databases.sh's
+checkm2_db: "~/databases/checkm2/CheckM2_database/uniref100.KO.1.dmnd"
+skip_gunc: false
+gunc_db: "~/databases/gunc/gunc_db_progenomes2.1.dmnd" # path to GUNC .dmnd database
+gtdbtk_data_path: "~/databases/gtdbtk" # GTDB-Tk dir
+min_completeness: 50 # quality filter to make it into Final-bins/ at all
+max_contamination: 10
+
+## strain phasing (05-StrainPhasing, Track B)
+## Off by default. Check if works with all assemblers.
+run_strain_phasing: false
+
+## conda environments
+main_env: "../../environment.yml"
+checkm2_env: "../../environment.checkm2.yml"
+comebin_env: "../../environment.comebin.yml"
