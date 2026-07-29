@@ -1,0 +1,8 @@
+# COMEBin needs its own environment: every bioconda build pins exactly
+# python=3.7
+name: comebin
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - comebin=1.0.4
