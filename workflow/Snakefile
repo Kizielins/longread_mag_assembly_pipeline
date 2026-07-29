@@ -1,0 +1,56 @@
+"""
+Main Snakefile for strain-focused pipeline that assembles MAGs from long-read ONT metagenomic data.
+
+Run with, e.g.:
+    snakemake --configfile config/config.yaml --config samples_sheet=samples.tsv outdir=pipeline-out \
+        --use-conda --cores 16
+"""
+
+configfile: "config/config.yaml"
+
+OUTDIR = config["outdir"]
+
+include: "rules/common.smk"
+
+SAMPLES = load_samples(config["samples_sheet"])
+
+ASSEMBLERS = config.get("assemblers", ["metaflye"])
+for _a in ASSEMBLERS:
+    if _a not in ("metaflye", "nanomdbg", "myloasm"):
+        raise ValueError(f"Unknown assembler {_a!r} in assemblers; expected metaflye, nanomdbg, or myloasm")
+
+include: "rules/qc.smk"
+include: "rules/assembly.smk"
+include: "rules/strainphasing.smk"
+include: "rules/polishing.smk"
+include: "rules/binning.smk"
+include: "rules/refinement.smk"
+include: "rules/binqc.smk"
+include: "rules/taxonomy.smk"
+
+## Rules and targets for running stages one-by-one
+
+def qc_targets():
+    targets = []
+    for sample in SAMPLES:
+        targets.append(f"{OUTDIR}/00-QC/{sample}/nanoplot_raw")
+        targets.append(f"{OUTDIR}/00-QC/{sample}/nanoplot_filtered")
+    return targets
+
+
+rule qc:
+    input:
+        qc_targets(),
+
+
+def assembly_targets():
+    return [
+        f"{OUTDIR}/01-LongAssemblies/{sample}/{assembler}/assembly.fasta"
+        for sample in SAMPLES
+        for assembler in ASSEMBLERS
+    ]
+
+
+rule assembly:
+    input:
+        assembly_targets(),
