@@ -1,0 +1,37 @@
+name: pipeline
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+# gtdbtk is pinned to 2.4.1: the first release compatible with the GTDB R226
+# combine bundels it's own checkm v1
+# Versions below are pinned to exactly what solved and was verified on Linux
+# on 2026-07-22 (conda-forge/bioconda, x86_64).
+
+dependencies:
+  - python=3.12.13
+  - snakemake-minimal=9.16.3
+  - flye=2.9.6
+  - metamdbg=1.4
+  - myloasm=0.6.0
+  - mylotools=2.1.0
+  - metabat2=2.18_23_gc869c52
+  - das_tool=1.1.7
+  - gunc=1.1.1
+  - chopper=0.13.0
+  - nanoplot=1.47.1
+  - hostile=2.0.2
+  - medaka=2.1.1
+  - seqtk=1.5
+  - minimap2=2.31
+  - bbmap=39.81
+  - barrnap=1.10.6
+  - trnascan-se=2.0.13
+  - perl=5.32.1
+  - samtools=1.23.1
+  - gtdbtk=2.4.1
+  - fastani=1.34
+  - prodigal=2.6.3
+  - strainy=1.2
+  - pip:
+      - SemiBin==2.4.0
