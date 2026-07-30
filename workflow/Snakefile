@@ -54,3 +54,15 @@ def assembly_targets():
 rule assembly:
     input:
         assembly_targets(),
+
+def polishing_targets():
+    return [
+        f"{OUTDIR}/02-Polishing/{sample}/{assembler}/polished_assembly.fasta"
+        for sample in SAMPLES
+        for assembler in ASSEMBLERS
+    ]
+
+
+rule polishing:
+    input:
+        polishing_targets(),
