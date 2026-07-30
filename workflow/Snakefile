@@ -66,3 +66,20 @@ def polishing_targets():
 rule polishing:
     input:
         polishing_targets(),
+
+def binning_targets():
+    targets = []
+    for sample in SAMPLES:
+        for assembler in ASSEMBLERS:
+            targets.append(f"{OUTDIR}/03-LongBins/{sample}/{assembler}/INITIAL_BINNING/metabat2/metabat2-bins")
+            targets.append(
+                f"{OUTDIR}/03-LongBins/{sample}/{assembler}/INITIAL_BINNING/semibin/semibin-output/output_bins"
+            )
+            if cfg_bool("use_comebin"):
+                targets.append(f"{OUTDIR}/03-LongBins/{sample}/{assembler}/INITIAL_BINNING/comebin/comebin-bins")
+    return targets
+
+
+rule binning:
+    input:
+        binning_targets(),
