@@ -21,6 +21,20 @@ chopper_min_length: 1000
 ## Options: metaflye | nanomdbg | myloasm
 assemblers: ["myloasm"]
 
+## Flye- specific options
+flye_read_error:
+  "" # leave empty for flye's default, might consider nudgeing down for very high-accuracy models (like 0.02)
+  # <- check how it affects strainy (might give cleaner separation between close strains)
+# both used to control memory/ runtime on very large metagenomes or coverage (~100x) only works when both are set.
+flye_asm_coverage: "" # 30-50 (help says 40x coverage is enough)
+flye_genome_size: "" # a rough TOTAL estimate for the whole community
+
+## Myloasm-specific options
+myloasm_quality_value_cutoff: "" # default: 90. Minimum read accuracy (%) required for a read to be used at all.
+myloasm_bloom_filter_size: "" # adjust for large coverage/ genome size
+myloasm_dereplication_ani: "" # default- 99. Raising makes assembly more fragmented but only throws away contigs which are nearlt identical
+myloasm_dereplication_length: "" # deafult 500000 - protects larger near-complete contigs from being marked as alternates (basically - only apply the above to contigs shorter than this value)
+
 ## polishing (02-Polishing)
 medaka_model: "r1041_e82_400bps_sup_v4.2.0" # must match the Dorado basecalling model; list available: medaka tools list_models
 
