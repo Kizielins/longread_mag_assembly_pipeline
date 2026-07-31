@@ -45,7 +45,7 @@ semibin_env:
 use_comebin: false
 
 ## bin refinement (DAS_Tool)
-dastool_score_threshold: 0.5
+dastool_score_threshold: 0.5 # 0-1 lower- more bins, higher- stricter, fewer but cleaner bins
 
 ## bin QC (04-BinQC, final output in top-level Final-bins/)
 ## checkm2_db / gunc_db / gtdbtk_data_path default to download_databases.sh's
@@ -53,8 +53,14 @@ checkm2_db: "~/databases/checkm2/CheckM2_database/uniref100.KO.1.dmnd"
 skip_gunc: false
 gunc_db: "~/databases/gunc/gunc_db_progenomes2.1.dmnd" # path to GUNC .dmnd database
 gtdbtk_data_path: "~/databases/gtdbtk" # GTDB-Tk dir
-min_completeness: 50 # quality filter to make it into Final-bins/ at all
+# quality filters to make it into Final-bins/ at all
+min_completeness: 50
 max_contamination: 10
+## MIMAG high-quality draft status (Bowers et al. 2017): >90% complete, <5%
+## contaminated, 5S+16S+23S rRNA all present (barrnap), >=18 tRNAs (tRNAscan-SE).
+mimag_min_completeness: 90
+mimag_max_contamination: 5
+mimag_min_trna: 18
 
 ## strain phasing (05-StrainPhasing, Track B)
 ## Off by default. Check if works with all assemblers.
