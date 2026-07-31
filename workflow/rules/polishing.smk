@@ -1,4 +1,12 @@
-"""02-Polishing: single-round medaka polishing of the whole assembly."""
+"""02-Polishing: single-round medaka polishing of the whole assembly.
+
+Inputs:
+- draft - raw assembly from assembly.smk
+- reads - QC'd reads from qc.smk
+
+Outputs:
+- polished_assembly.fasta -- medaka consensus assembly
+"""
 
 rule medaka_polish_assembly:
     input:

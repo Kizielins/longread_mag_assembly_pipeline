@@ -1,5 +1,14 @@
 """00-QC: NanoPlot QC visualization, Chopper length/quality filtering,
 host-read removal with hostile.
+
+Inputs:
+- raw reads
+
+Outputs:
+- nanoplot_raw/ - NanoPlot QC report on the raw, unfiltered reads
+- filtered.reads.fq.gz - Chopper length/quality-filtered reads (temp, intermediate)
+- dehosted.reads.fq.gz - filtered reads with human host reads removed (skipped if skip_host_removal)
+- nanoplot_filtered/ - NanoPlot QC report on the final filtered reads
 """
 
 def qc_reads_path(wildcards):

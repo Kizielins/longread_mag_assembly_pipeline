@@ -1,4 +1,6 @@
 """01-LongAssemblies: long-read metagenome assembly.
+Inputs:
+- reads - QC'd reads from qc.smk
 
 Output (regardless of assembler):
     - assembly.fasta
