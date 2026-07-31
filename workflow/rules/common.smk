@@ -25,3 +25,17 @@ def cfg_bool(key, default=False):
     """Read a boolean config value safely."""
     return str(config.get(key, default)).strip().lower() in ("true", "1", "yes")
 
+def active_binners():
+    """metabat2 + SemiBin2 always; COMEBin only if use_comebin is set """
+    binners = ["metabat2", "semibin2"]
+    if cfg_bool("use_comebin"):
+        binners.append("comebin")
+    return binners
+
+def get_bin_ids(wildcards):
+    """Dynamic list of DAS_Tool-refined bin IDs (bin.1, bin.2, ...).
+    Any rule that needs all bins must call this function.
+    """
+    refined_dir = checkpoints.das_tool_refine.get(**wildcards).output.bins_dir
+    bin_ids = glob_wildcards(os.path.join(refined_dir, "{bin}.fa")).bin
+    return sorted(bin_ids, key=lambda b: int(b.split(".")[-1]))
