@@ -16,7 +16,7 @@ Outputs:
 
 
 rule map_reads_to_assembly:
-"""Sorted, indexed BAM of long reads mapped back to the polished assembly."""
+    """Sorted, indexed BAM of long reads mapped back to the polished assembly."""
     input:
         assembly=rules.medaka_polish_assembly.output.consensus,
         reads=qc_reads_path,
@@ -34,7 +34,7 @@ rule map_reads_to_assembly:
         mini_ref=$(( asm_gb > 4 ? asm_gb : 4 ))
         minimap2 -a -x map-ont -I${{mini_ref}}g -t {threads} {input.assembly} {input.reads} 2> {log} \
             | samtools view -h -b -S -@ {threads} - \
-            | samtools view -b -F 4 -@ {threads} - \ 
+            | samtools view -b -F 4 -@ {threads} - \
             | samtools sort -@ {threads} -o {output.bam} -
         samtools index -@ {threads} {output.bam}
         """
