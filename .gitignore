@@ -3,3 +3,6 @@ test-data/
 
 ## Pipeline output dir 
 pipeline-out/
+
+## Snakemake's own metadata/lock/log directory
+.snakemake/
