@@ -1,5 +1,17 @@
 """03-LongBins/INITIAL_BINNING: read mapping -> coverage, then metabat2 +
 SemiBin2 (+ optional COMEBin) binning.
+
+Inputs:
+- assembly - polished assembly from polishing.smk
+- reads - QC'd reads from qc.smk
+
+Outputs:
+- contig.mapped.sorted.bam(.bai) - reads mapped back onto the assembly
+- depth.txt - per-contig coverage (jgi_summarize_bam_contig_depths)
+- metabat2-bins/ - metabat2's bin fastas
+- output_bins/ - SemiBin2's bin fastas
+- comebin-bins/ - COMEBin's bin fastas (only if use_comebin is set)
+
 """
 
 
