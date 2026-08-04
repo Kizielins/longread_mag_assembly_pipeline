@@ -50,7 +50,6 @@ dastool_score_threshold: 0.5 # 0-1 lower- more bins, higher- stricter, fewer but
 ## bin QC (04-BinQC, final output in top-level Final-bins/)
 ## checkm2_db / gunc_db / gtdbtk_data_path default to download_databases.sh's
 checkm2_db: "~/databases/checkm2/CheckM2_database/uniref100.KO.1.dmnd"
-skip_gunc: false
 gunc_db: "~/databases/gunc/gunc_db_progenomes2.1.dmnd" # path to GUNC .dmnd database
 gtdbtk_data_path: "~/databases/gtdbtk" # GTDB-Tk dir
 # quality filters to make it into Final-bins/ at all
