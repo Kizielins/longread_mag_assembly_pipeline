@@ -83,3 +83,37 @@ def binning_targets():
 rule binning:
     input:
         binning_targets(),
+
+
+def refinement_targets():
+    return [
+        f"{OUTDIR}/03-LongBins/{sample}/{assembler}/BIN_REFINEMENT/refined-bins"
+        for sample in SAMPLES
+        for assembler in ASSEMBLERS
+    ]
+
+
+rule refinement:
+    input:
+        refinement_targets(),
+
+def binqc_targets():
+    targets = []
+    for sample in SAMPLES:
+        for assembler in ASSEMBLERS:
+            targets.append(f"{OUTDIR}/04-BinQC/{sample}/{assembler}/staging/checkm2-result/quality_report.tsv")
+            targets.append(f"{OUTDIR}/04-BinQC/{sample}/{assembler}/staging/gunc-result")
+            targets.append(f"{OUTDIR}/04-BinQC/{sample}/{assembler}/staging/passed_bins.list")
+            for bin_id in get_bin_ids({"sample": sample, "assembler": assembler}):
+                targets.append(
+                    f"{OUTDIR}/04-BinQC/{sample}/{assembler}/staging/polished-bins/{bin_id}.rrna.gff"
+                )
+                targets.append(
+                    f"{OUTDIR}/04-BinQC/{sample}/{assembler}/staging/polished-bins/{bin_id}.trna.txt"
+                )
+    return targets
+
+
+rule binqc:
+    input:
+        lambda wc: binqc_targets(),
