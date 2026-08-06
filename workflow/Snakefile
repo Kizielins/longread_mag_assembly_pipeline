@@ -117,3 +117,46 @@ def binqc_targets():
 rule binqc:
     input:
         lambda wc: binqc_targets(),
+
+def taxonomy_targets():
+    return [
+        f"{OUTDIR}/{sample}.{assembler}.pipeline.ont.genome.summary"
+        for sample in SAMPLES
+        for assembler in ASSEMBLERS
+    ]
+
+
+rule taxonomy:
+    input:
+        taxonomy_targets(),
+
+def strainphasing_targets():
+    return [
+        f"{OUTDIR}/06-StrainPhasing/{sample}/{assembler}/strainy-result"
+        for sample in SAMPLES
+        for assembler in ASSEMBLERS
+    ]
+
+
+if cfg_bool("run_strain_phasing"):
+
+    rule strainphasing:
+        input:
+            strainphasing_targets(),
+
+
+def all_targets():
+    targets = qc_targets() + taxonomy_targets()
+    for sample in SAMPLES:
+        for assembler in ASSEMBLERS:
+            targets.append(f"{OUTDIR}/04-BinQC/{sample}/{assembler}/staging/gunc-result")
+    if cfg_bool("run_strain_phasing"):
+        targets += strainphasing_targets()
+    if "myloasm" in ASSEMBLERS:
+        targets += [f"{OUTDIR}/06-StrainPhasing/{sample}/myloasm/alternate-contigs.fa" for sample in SAMPLES]
+    return targets
+
+
+rule all:
+    input:
+        all_targets(),
