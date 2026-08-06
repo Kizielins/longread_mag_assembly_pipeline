@@ -118,6 +118,7 @@ rule assemble_myloasm:
         assembly=f"{OUTDIR}/01-LongAssemblies/{{sample}}/myloasm/assembly.fasta",
         contigs_info=f"{OUTDIR}/01-LongAssemblies/{{sample}}/myloasm/contigs_info.tsv",
         graph=f"{OUTDIR}/01-LongAssemblies/{{sample}}/myloasm/assembly_graph.gfa",
+        alternate=f"{OUTDIR}/01-LongAssemblies/{{sample}}/myloasm/assembly_alternate.fa",
     params:
         tmpdir=f"{OUTDIR}/01-LongAssemblies/{{sample}}/myloasm/tmp",
         extra_flags=myloasm_extra_flags(),
@@ -135,5 +136,10 @@ rule assemble_myloasm:
             | awk -F"\\t" 'BEGIN{{OFS="\\t"}}{{circ=($1 ~ /circular-yes/) ? "Y" : "N"; print $1,$2,circ}}'; \
             }} > {output.contigs_info}
         mv {params.tmpdir}/final_contig_graph.gfa {output.graph}
+        if [ -f {params.tmpdir}/alternate_assemblies/assembly_alternate.fa ]; then
+            mv {params.tmpdir}/alternate_assemblies/assembly_alternate.fa {output.alternate}
+        else
+            touch {output.alternate}
+        fi
         rm -rf {params.tmpdir}
         """
