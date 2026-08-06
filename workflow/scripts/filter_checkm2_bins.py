@@ -1,5 +1,4 @@
-"""Filter bins by CheckM2 completeness/contamination stats and copy 
-to Final-bins/passed/ for GTDB-Tk classification. """
+"""Filter bins by CheckM2 completeness/contamination stats """
 
 import csv
 import os
