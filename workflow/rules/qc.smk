@@ -47,7 +47,7 @@ rule chopper_filter:
     log:
         f"{OUTDIR}/00-QC/{{sample}}/chopper.log",
     shell:
-        "zcat -f {input} | chopper -q {params.min_q} -l {params.min_l} --threads {threads} "
+        "pigz -dcf -p {threads} {input} | chopper -q {params.min_q} -l {params.min_l} --threads {threads} "
         "2> {log} | gzip > {output}"
 
 
