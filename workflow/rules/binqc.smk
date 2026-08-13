@@ -39,13 +39,14 @@ rule checkm2_predict:
         indir=f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/polished-bins",
         outdir=f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/checkm2-result",
         db=expand_path(config["checkm2_db"]),
+        bin=expand_path(config["checkm2_bin"]),
     threads: config["threads"]
     conda:
         config["checkm2_env"]
     log:
         f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/checkm2-result.log",
     shell:
-        "checkm2 predict --input {params.indir} --output-directory {params.outdir} "
+        "{params.bin} predict --input {params.indir} --output-directory {params.outdir} "
         "--database_path {params.db} --extension fasta --threads {threads} --force > {log} 2>&1"
 
 rule filter_checkm2_bins:
