@@ -59,6 +59,7 @@ rule assemble_metaflye:
         contigs_info=f"{OUTDIR}/01-LongAssemblies/{{sample}}/metaflye/contigs_info.tsv",
         graph=f"{OUTDIR}/01-LongAssemblies/{{sample}}/metaflye/assembly_graph.gfa",
         log=f"{OUTDIR}/01-LongAssemblies/{{sample}}/metaflye/flye.log",
+        assembly_info=f"{OUTDIR}/01-LongAssemblies/{{sample}}/metaflye/assembly_info.txt",
     params:
         tmpdir=f"{OUTDIR}/01-LongAssemblies/{{sample}}/metaflye/tmp",
         extra_flags=flye_extra_flags(),
