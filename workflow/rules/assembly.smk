@@ -78,7 +78,7 @@ rule assemble_metaflye:
         mv {params.tmpdir}/assembly_graph.gfa {output.graph}
         mv {params.tmpdir}/flye.log {output.log}
         mv {params.tmpdir}/assembly_info.txt {output.assembly_info}
-        {{ echo -e "seq_name\\tlength\\tcircular"; tail -n+2 {params.tmpdir}/assembly_info.txt \
+        {{ echo -e "seq_name\\tlength\\tcircular"; tail -n+2 {output.assembly_info} \
             | awk -F"\\t" 'BEGIN{{OFS="\\t"}}{{print $1,$2,$4}}'; }} > {output.contigs_info}
         rm -rf {params.tmpdir}
         """
