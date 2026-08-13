@@ -115,7 +115,7 @@ if cfg_bool("use_comebin"):
         log:
             f"{OUTDIR}/03-LongBins/{{sample}}/{{assembler}}/INITIAL_BINNING/comebin/comebin.log",
         shell:
-            """
+            r"""
             mkdir -p {params.bamdir}
             ln -sf $(realpath {input.bam}) {params.bamdir}/
             run_comebin.sh -a {input.assembly} -p {params.bamdir} -o {params.outdir} -t {threads} > {log} 2>&1
