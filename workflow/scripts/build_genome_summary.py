@@ -1,4 +1,34 @@
-"""Build pipeline.ont.genome.summary and the published Final-bins/ FASTAs."""
+"""Build pipeline.ont.genome.summary and the published Final-bins/ FASTAs.
+
+Inputs (snakemake.input.*), file (producing rule):
+  checkm2_report -- 04-BinQC/{sample}/{assembler}/staging/checkm2-result/quality_report.tsv
+                    (binqc.smk::checkm2_predict)
+  taxa           -- 05-GTDBTK/{sample}/{assembler}/tmp.taxa
+                    (taxonomy.smk::gtdbtk_classify)
+  contigs_info   -- 01-LongAssemblies/{sample}/{assembler}/contigs_info.tsv
+                    (assembly.smk::assemble_metaflye/assemble_nanomdbg/assemble_myloasm)
+  coverage       -- 03-LongBins/{sample}/{assembler}/INITIAL_BINNING/depth.txt
+                    (binning.smk::contig_abundance)
+  rrna           -- 04-BinQC/{sample}/{assembler}/staging/polished-bins/{bin}.rrna.gff, per bin
+                    (binqc.smk::barrnap_predict)
+  trna           -- 04-BinQC/{sample}/{assembler}/staging/polished-bins/{bin}.trna.txt, per bin
+                    (binqc.smk::trnascan_predict)
+  gunc_report    -- 04-BinQC/{sample}/{assembler}/staging/gunc-result/
+                    (binqc.smk::gunc_run)
+  passed_bins    -- 04-BinQC/{sample}/{assembler}/staging/passed-bins/
+                    (binqc.smk::filter_quality_bins)
+  passed_list    -- 04-BinQC/{sample}/{assembler}/staging/passed_bins.list
+                    (binqc.smk::filter_quality_bins)
+
+Outputs (snakemake.output.*):
+  summary   -- {outdir}/{sample}.{assembler}.pipeline.ont.genome.summary
+               (one row per quality-passed bin: completeness, contamination, genome
+               stats, GTDB-Tk taxonomy, GUNC_CSS, MIMAG_HQ)
+  finalbins -- {outdir}/Final-bins/{sample}/{assembler}/ (directory)
+               (one FASTA per quality-passed bin, contig headers tagged with
+               cov=/circular= from coverage + contigs_info above)
+
+"""
 
 
 import csv
