@@ -60,6 +60,7 @@ rule assemble_metaflye:
         graph=f"{OUTDIR}/01-LongAssemblies/{{sample}}/metaflye/assembly_graph.gfa",
         log=f"{OUTDIR}/01-LongAssemblies/{{sample}}/metaflye/flye.log",
         assembly_info=f"{OUTDIR}/01-LongAssemblies/{{sample}}/metaflye/assembly_info.txt",
+        graph_path=f"{OUTDIR}/01-LongAssemblies/{{sample}}/metaflye/contig_graph_path.tsv",
     params:
         tmpdir=f"{OUTDIR}/01-LongAssemblies/{{sample}}/metaflye/tmp",
         extra_flags=flye_extra_flags(),
@@ -80,8 +81,11 @@ rule assemble_metaflye:
         mv {params.tmpdir}/assembly_info.txt {output.assembly_info}
         {{ echo -e "seq_name\\tlength\\tcircular"; tail -n+2 {output.assembly_info} \
             | awk -F"\\t" 'BEGIN{{OFS="\\t"}}{{print $1,$2,$4}}'; }} > {output.contigs_info}
+        {{ echo -e "seq_name\\tgraph_path"; tail -n+2 {output.assembly_info} \
+            | awk -F"\\t" 'BEGIN{{OFS="\\t"}}{{print $1,$8}}'; }} > {output.graph_path}
         rm -rf {params.tmpdir}
         """
+
 
 rule assemble_nanomdbg:
     input:
