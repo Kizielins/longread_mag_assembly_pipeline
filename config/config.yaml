@@ -52,6 +52,7 @@ dastool_score_threshold: 0.5 # 0-1 lower- more bins, higher- stricter, fewer but
 checkm2_db: "~/databases/checkm2/CheckM2_database/uniref100.KO.1.dmnd"
 gunc_db: "~/databases/gunc/gunc_db_progenomes2.1.dmnd" # path to GUNC .dmnd database
 gtdbtk_data_path: "~/databases/gtdbtk" # GTDB-Tk dir
+gtdbtk_pplacer_cpus: 16  # keeping this below threads avoids OOM errors
 # quality filters to make it into Final-bins/ at all
 min_completeness: 50
 max_contamination: 10
