@@ -1,9 +1,8 @@
-name: pipeline
+name: pipeline-original
 channels:
   - conda-forge
   - bioconda
-  - defaults
-# gtdbtk is pinned to 2.4.1: the first release compatible with the GTDB R226
+# gtdbtk is pinned to 2.6.1: the release compatible with the GTDB R226
 # combine bundels it's own checkm v1
 # Versions below are pinned to exactly what solved and was verified on Linux
 # on 2026-07-22 (conda-forge/bioconda, x86_64).
@@ -29,7 +28,7 @@ dependencies:
   - trnascan-se=2.0.13
   - perl=5.32.1
   - samtools=1.23.1
-  - gtdbtk=2.4.1
+  - gtdbtk=2.6.1
   - fastani=1.34
   - prodigal=2.6.3
   - strainy=1.2
