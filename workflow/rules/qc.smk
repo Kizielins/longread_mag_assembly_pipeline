@@ -35,7 +35,7 @@ rule nanoplot_raw:
 
 rule chopper_filter:
     input:
-        raw_reads_paths,
+        raw_reads_path,
     output:
         temp(f"{OUTDIR}/00-QC/{{sample}}/filtered.reads.fq.gz"),
     params:
