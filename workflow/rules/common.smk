@@ -5,16 +5,29 @@ import os
 
 
 def load_samples(sheet_path):
-    """Parse the TSV pointed at by config["samples_sheet"] into {sample: fastq}."""
-    samples = {}
+    """Parse the TSV pointed at by config["samples_sheet"] into two dicts:
+    fastq (sample -> already-basecalled fastq path) and pod5 (sample -> POD5
+    input directory, for samples that need Dorado basecalling first -- see
+    basecalling.smk)."""
+    fastq, pod5 = {}, {}
     with open(sheet_path) as fh:
         reader = csv.DictReader(fh, delimiter="\t")
         for row in reader:
-            samples[row["sample"]] = row["fastq"]
-    if not samples:
-        raise ValueError(f"No samples found in {sheet_path!r} -- expected a header row plus one row per sample.")
-    return samples
-
+            sample = row["sample"]
+            has_fastq = bool(row.get("fastq", "").strip())
+            has_pod5 = bool(row.get("pod5_dir", "").strip())
+            if has_fastq == has_pod5:
+                raise ValueError(
+                    f"Sample {sample!r} in {sheet_path!r} must set exactly one of "
+                    "`fastq` or `pod5_dir`, not both/neither."
+                )
+            if has_fastq:
+                fastq[sample] = row["fastq"]
+            else:
+                pod5[sample] = row["pod5_dir"]
+    if not fastq and not pod5:
+        raise ValueError(f"No samples found in {sheet_path!r} - expected a header row plus one row per sample.")
+    return fastq, pod5
 
 def expand_path(path):
     """Expand ~ and $VARS in a config-supplied filesystem path."""
