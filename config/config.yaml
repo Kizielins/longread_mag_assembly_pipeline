@@ -2,12 +2,26 @@
 # Override any of those on the command line with --config key=value
 
 ## input/output
-samples_sheet: "samples.tsv" # TSV with columns 'sample' (sample name) and 'fastq' (path)
+samples_sheet: "samples.tsv" # # TSV with columns 'sample', 'fastq', 'pod5_dir'. Each row
+  # sets exactly one of `fastq` (already-basecalled reads) or `pod5_dir`
 
 outdir: "pipeline-out" # output directory
 
 ## resources
 threads: 16
+
+## basecalling (Basecalling/)
+dorado_bin: "/path/to/dorado-x.y.z-linux-x64/bin/dorado"
+dorado_model: "sup" # shorthand (fast|hac|sup) auto-resolves the latest model
+  # for the input's detected chemistry, or an explicit versioned model name
+  # (see `dorado models list`) for reproducibility across runs.
+dorado_modified_bases: "" # empty = simplex-only (default). Comma-separated
+  # modified-base tags appended to dorado_model (e.g. "5mC", "6mA", or
+  # "5mC,6mA") to call methylation in the same basecalling pass - see
+  # `dorado basecaller --help` for the full list your model supports.
+dorado_include_fail: true # include pod5_fail/ alongside pod5_pass/
+dorado_device: "cuda:all" # dorado's own --device syntax: "cpu", "cuda:all",
+  # "cuda:0", "cuda:0,1", or "auto".
 
 ## QC (00-QC)
 skip_host_removal: false # runs right after Chopper filtering
@@ -37,7 +51,7 @@ myloasm_dereplication_length: "" # deafult 500000 - protects larger near-complet
 
 ## polishing (02-Polishing)
 medaka_model: "r1041_e82_400bps_sup_v4.2.0" # must match the Dorado basecalling model; list available: medaka tools list_models
-skip_medaka: false
+skip_medaka: true
 ## binning (03-LongBins)
 semibin_env:
   "human_gut" # SemiBin2 pretrained environment model
