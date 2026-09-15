@@ -38,11 +38,6 @@ def qc_targets():
     return targets
 
 
-rule qc:
-    input:
-        qc_targets(),
-
-
 def assembly_targets():
     return [
         f"{OUTDIR}/01-LongAssemblies/{sample}/{assembler}/assembly.fasta"
@@ -51,10 +46,6 @@ def assembly_targets():
     ]
 
 
-rule assembly:
-    input:
-        assembly_targets(),
-
 def polishing_targets():
     return [
         f"{OUTDIR}/02-Polishing/{sample}/{assembler}/polished_assembly.fasta"
@@ -62,10 +53,6 @@ def polishing_targets():
         for assembler in ASSEMBLERS
     ]
 
-
-rule polishing:
-    input:
-        polishing_targets(),
 
 def binning_targets():
     targets = []
@@ -80,11 +67,6 @@ def binning_targets():
     return targets
 
 
-rule binning:
-    input:
-        binning_targets(),
-
-
 def refinement_targets():
     return [
         f"{OUTDIR}/03-LongBins/{sample}/{assembler}/BIN_REFINEMENT/refined-bins"
@@ -92,10 +74,6 @@ def refinement_targets():
         for assembler in ASSEMBLERS
     ]
 
-
-rule refinement:
-    input:
-        refinement_targets(),
 
 def binqc_targets():
     targets = []
@@ -114,10 +92,6 @@ def binqc_targets():
     return targets
 
 
-rule binqc:
-    input:
-        lambda wc: binqc_targets(),
-
 def taxonomy_targets():
     return [
         f"{OUTDIR}/{sample}.{assembler}.pipeline.ont.genome.summary"
@@ -126,23 +100,12 @@ def taxonomy_targets():
     ]
 
 
-rule taxonomy:
-    input:
-        taxonomy_targets(),
-
 def strainphasing_targets():
     return [
         f"{OUTDIR}/06-StrainPhasing/{sample}/{assembler}/strainy-result"
         for sample in SAMPLES
         for assembler in ASSEMBLERS
     ]
-
-
-if cfg_bool("run_strain_phasing"):
-
-    rule strainphasing:
-        input:
-            strainphasing_targets(),
 
 
 def all_targets():
@@ -160,3 +123,45 @@ def all_targets():
 rule all:
     input:
         all_targets(),
+
+
+rule qc:
+    input:
+        qc_targets(),
+
+
+rule assembly:
+    input:
+        assembly_targets(),
+
+
+rule polishing:
+    input:
+        polishing_targets(),
+
+
+rule binning:
+    input:
+        binning_targets(),
+
+
+rule refinement:
+    input:
+        refinement_targets(),
+
+
+rule binqc:
+    input:
+        lambda wc: binqc_targets(),
+
+
+rule taxonomy:
+    input:
+        taxonomy_targets(),
+
+
+if cfg_bool("run_strain_phasing"):
+
+    rule strainphasing:
+        input:
+            strainphasing_targets(),
