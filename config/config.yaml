@@ -37,7 +37,7 @@ myloasm_dereplication_length: "" # deafult 500000 - protects larger near-complet
 
 ## polishing (02-Polishing)
 medaka_model: "r1041_e82_400bps_sup_v4.2.0" # must match the Dorado basecalling model; list available: medaka tools list_models
-
+skip_medaka: false
 ## binning (03-LongBins)
 semibin_env:
   "human_gut" # SemiBin2 pretrained environment model

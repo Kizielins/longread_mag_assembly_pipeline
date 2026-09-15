@@ -15,6 +15,7 @@ rule medaka_polish_assembly:
     output:
         consensus=f"{OUTDIR}/02-Polishing/{{sample}}/{{assembler}}/polished_assembly.fasta",
     params:
+        skip=lambda wc: cfg_bool("skip_medaka"),
         outdir=f"{OUTDIR}/02-Polishing/{{sample}}/{{assembler}}/medaka",
         model=config["medaka_model"],
     threads: config["threads"]
@@ -24,6 +25,11 @@ rule medaka_polish_assembly:
         f"{OUTDIR}/02-Polishing/{{sample}}/{{assembler}}/medaka.log",
     shell:
         """
+        if [ "{params.skip}" = "True" ]; then
+            echo "skip_medaka set -- copying raw draft assembly through unpolished" > {log}
+            cp {input.draft} {output.consensus}
+            exit 0
+        fi
         medaka_consensus -m {params.model} -i {input.reads} -d {input.draft} -o {params.outdir} -t {threads} > {log} 2>&1
         cp {params.outdir}/consensus.fasta {output.consensus}
         rm -rf {params.outdir}/calls_to* {params.outdir}/consensus_probs.hdf {params.outdir}/consensus.fasta.gaps_in_draft_coords.bed
