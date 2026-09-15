@@ -20,7 +20,7 @@ def qc_reads_path(wildcards):
 
 rule nanoplot_raw:
     input:
-        lambda wc: SAMPLES[wc.sample],
+        raw_reads_path,
     output:
         directory(f"{OUTDIR}/00-QC/{{sample}}/nanoplot_raw"),
     threads: config["threads"]
@@ -35,7 +35,7 @@ rule nanoplot_raw:
 
 rule chopper_filter:
     input:
-        lambda wc: SAMPLES[wc.sample],
+        raw_reads_paths,
     output:
         temp(f"{OUTDIR}/00-QC/{{sample}}/filtered.reads.fq.gz"),
     params:
