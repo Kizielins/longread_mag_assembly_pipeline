@@ -12,13 +12,15 @@ OUTDIR = config["outdir"]
 
 include: "rules/common.smk"
 
-SAMPLES = load_samples(config["samples_sheet"])
+SAMPLES_FASTQ, SAMPLES_POD5 = load_samples(config["samples_sheet"])
+SAMPLES = list(SAMPLES_FASTQ) + list(SAMPLES_POD5)
 
 ASSEMBLERS = config.get("assemblers", ["metaflye"])
 for _a in ASSEMBLERS:
     if _a not in ("metaflye", "nanomdbg", "myloasm"):
         raise ValueError(f"Unknown assembler {_a!r} in assemblers; expected metaflye, nanomdbg, or myloasm")
 
+include: "rules/basecalling.smk"
 include: "rules/qc.smk"
 include: "rules/assembly.smk"
 include: "rules/strainphasing.smk"
