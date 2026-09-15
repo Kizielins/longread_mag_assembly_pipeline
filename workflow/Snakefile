@@ -12,8 +12,8 @@ OUTDIR = config["outdir"]
 
 include: "rules/common.smk"
 
-SAMPLES_FASTQ, SAMPLES_POD5 = load_samples(config["samples_sheet"])
-SAMPLES = list(SAMPLES_FASTQ) + list(SAMPLES_POD5)
+SAMPLES_FASTQ, SAMPLES_POD5_BARCODED, RUNS = load_samples(config["samples_sheet"])
+SAMPLES = list(SAMPLES_FASTQ) + list(SAMPLES_POD5_BARCODED)
 
 ASSEMBLERS = config.get("assemblers", ["metaflye"])
 for _a in ASSEMBLERS:
@@ -31,6 +31,12 @@ include: "rules/binqc.smk"
 include: "rules/taxonomy.smk"
 
 ## Rules and targets for running stages one-by-one
+
+def basecalling_targets():
+    return [
+        f"{OUTDIR}/Basecalling/{run_id}/demux/{barcode}.fastq.gz"
+        for run_id, barcode in SAMPLES_POD5_BARCODED.values()
+    ]
 
 def qc_targets():
     targets = []
@@ -126,6 +132,9 @@ rule all:
     input:
         all_targets(),
 
+rule basecalling:
+    input:
+        basecalling_targets(),
 
 rule qc:
     input:
