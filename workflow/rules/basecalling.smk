@@ -12,10 +12,8 @@ wildcard_constraints:
 def raw_reads_path(wildcards):
     """Per-sample raw reads feeding 00-QC (nanoplot_raw, chopper_filter)."""
     if wildcards.sample in SAMPLES_POD5_BARCODED:
-        run_id, barcode = SAMPLES_POD5_BARCODED[wildcards.sample]
-        return f"{OUTDIR}/Basecalling/{run_id}/demux/{barcode}.fastq.gz"
+        return f"{OUTDIR}/Basecalling/samples/{wildcards.sample}.fastq.gz"
     return SAMPLES_FASTQ[wildcards.sample]
-
 
 def modbam_path(wildcards):
     """Per-sample BAM WITH modified-base tags, for methylation analysis.
@@ -108,25 +106,29 @@ rule barcode_bam:
                  | tee {log} >&2
             exit 1
         fi
-        if [ "${{#bc_dirs[@]}}" -gt 1 ]; then
-            echo "Multiple demux dirs matched {wildcards.barcode} in run {wildcards.run} (e.g. bam_pass/ + bam_fail/?) -- not yet handled, extend this rule once seen for real:" \
+
+        bc_bams=()
+        for d in "${{bc_dirs[@]}}"; do
+            while IFS= read -r -d '' f; do
+                bc_bams+=("$f")
+            done < <(find "$d" -maxdepth 1 -type f -name '*.bam' -print0)
+        done
+
+        if [ "${{#bc_bams[@]}}" -eq 0 ]; then
+            echo "Barcode dir(s) for {wildcards.barcode} in run {wildcards.run} contain no .bam files: ${{bc_dirs[*]}}" \
                  | tee {log} >&2
-            printf '%s\n' "${{bc_dirs[@]}}" | tee -a {log} >&2
             exit 1
         fi
 
-        mapfile -t bc_bams < <(find "${{bc_dirs[0]}}" -maxdepth 1 -type f -name '*.bam' | sort)
-        if [ "${{#bc_bams[@]}}" -ne 1 ]; then
-            echo "Expected exactly one BAM in ${{bc_dirs[0]}} for {wildcards.barcode} in run {wildcards.run}, found ${{#bc_bams[@]}} -- not yet handled, extend this rule once seen for real:" \
-                 | tee {log} >&2
-            printf '%s\n' "${{bc_bams[@]}}" | tee -a {log} >&2
-            exit 1
-        fi
+        echo "Concatenating ${{#bc_bams[@]}} bam(s) from ${{#bc_dirs[@]}} dir(s) into {output.bam}" > {log}
+        printf '%s\n' "${{bc_bams[@]}}" >> {log}
 
-        echo "Linking ${{bc_bams[0]}} -> {output.bam}" > {log}
-        ln -f "${{bc_bams[0]}}" {output.bam} 2>/dev/null || cp "${{bc_bams[0]}}" {output.bam}
+        if [ "${{#bc_bams[@]}}" -eq 1 ]; then
+            ln -f "${{bc_bams[0]}}" {output.bam} 2>/dev/null || cp "${{bc_bams[0]}}" {output.bam}
+        else
+            samtools cat -o {output.bam} "${{bc_bams[@]}}"
+        fi
         """
-
 
 rule barcode_fastq:
     input:
@@ -145,3 +147,12 @@ rule barcode_fastq:
         """
 
 
+rule sample_fastq:
+    input:
+        lambda wc: "{}/Basecalling/{}/demux/{}.fastq.gz".format(
+            OUTDIR, *SAMPLES_POD5_BARCODED[wc.sample]
+        ),
+    output:
+        f"{OUTDIR}/Basecalling/samples/{{sample}}.fastq.gz",
+    shell:
+        "ln -f {input} {output} 2>/dev/null || cp {input} {output}"

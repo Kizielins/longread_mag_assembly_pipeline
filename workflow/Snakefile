@@ -34,8 +34,8 @@ include: "rules/taxonomy.smk"
 
 def basecalling_targets():
     return [
-        f"{OUTDIR}/Basecalling/{run_id}/demux/{barcode}.fastq.gz"
-        for run_id, barcode in SAMPLES_POD5_BARCODED.values()
+        f"{OUTDIR}/Basecalling/samples/{sample}.fastq.gz"
+        for sample in SAMPLES_POD5_BARCODED
     ]
 
 def qc_targets():
