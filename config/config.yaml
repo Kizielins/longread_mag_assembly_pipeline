@@ -38,7 +38,6 @@ assemblers: ["myloasm"]
 ## Flye- specific options
 flye_read_error:
   "" # leave empty for flye's default, might consider nudgeing down for very high-accuracy models (like 0.02)
-  # <- check how it affects strainy (might give cleaner separation between close strains)
 # both used to control memory/ runtime on very large metagenomes or coverage (~100x) only works when both are set.
 flye_asm_coverage: "" # 30-50 (help says 40x coverage is enough)
 flye_genome_size: "" # a rough TOTAL estimate for the whole community
@@ -77,7 +76,6 @@ mimag_max_contamination: 5
 mimag_min_trna: 18
 
 ## strain phasing (05-StrainPhasing, Track B)
-## Off by default. Check if works with all assemblers.
 run_strain_phasing: false
 
 ## conda environments
