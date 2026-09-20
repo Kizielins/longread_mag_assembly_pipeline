@@ -37,7 +37,7 @@ rule chopper_filter:
     input:
         raw_reads_path,
     output:
-        temp(f"{OUTDIR}/00-QC/{{sample}}/filtered.reads.fq.gz"),
+        f"{OUTDIR}/00-QC/{{sample}}/filtered.reads.fq.gz",
     params:
         min_q=config["chopper_min_quality"],
         min_l=config["chopper_min_length"],
