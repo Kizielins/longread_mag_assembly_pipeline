@@ -42,10 +42,10 @@ def _dorado_pod5_input(pod5_dir):
     If a pod5_skip/ (or anything else pod5-bearing) can ever show up
     alongside them, --recursive would sweep that in too -- revisit then.
     """
-    if cfg_bool("dorado_include_fail", True):
-        return pod5_dir
-    return os.path.join(pod5_dir, "pod5_pass")
-
+    pass_dir = os.path.join(pod5_dir, "pod5_pass")
+    if not cfg_bool("dorado_include_fail", True) and os.path.isdir(pass_dir):
+        return pass_dir
+    return pod5_dir
 
 rule dorado_basecall_run:
     input:
