@@ -90,15 +90,29 @@ rule semibin2_binning:
         """
         SemiBin2 single_easy_bin --environment {params.environment} -i {input.assembly} --depth-metabat2 {input.depth} \
             -p {threads} --sequencing-type=long_read --compression none -o {params.outdir} > {log} 2>&1
-        ls {output.bins}/*.fa >/dev/null 2>&1
+        mkdir -p {output.bins}
+        if ! ls {output.bins}/*.fa >/dev/null 2>&1; then
+            echo "WARNING: SemiBin2 produced zero bins for this (sample, assembler) - contributing nothing to the DAS_Tool ensemble. See semibin.log for details." >> {log}
+        fi
         """
-
 
 if cfg_bool("use_comebin"):
 
     rule comebin_binning:
         """Optional third binner for extra ensemble diversity into DAS_Tool.
-        Needs its own env (config["comebin_env"] """
+        Needs its own env (config["comebin_env"] 
+        
+        COMEBin can legitimately crash mid-run on some assemblies: its
+        internal marker-gene seed-selection step (test_getmarker_*.pl) can
+        find zero qualifying seed contigs for a given k-means ensemble
+        method (observed on a real run - the script itself exits 0 and
+        writes nothing, which is normal behavior for a low-marker-density
+        input), but COMEBin's Python side doesn't skip that method when
+        that happens - it proceeds into its own bundled CheckM v1 scoring
+        step anyway, which then hard-crashes with FileNotFoundError trying
+        to list a bins/ directory that was never written (upstream bug,
+        unfixed as of ziyewang/COMEBin#53, same symptom reported there).
+        Check comebin.log if comebin-bins/ turns up empty"""
 
         input:
             assembly=rules.medaka_polish_assembly.output.consensus,
@@ -116,11 +130,13 @@ if cfg_bool("use_comebin"):
             f"{OUTDIR}/03-LongBins/{{sample}}/{{assembler}}/INITIAL_BINNING/comebin/comebin.log",
         shell:
             r"""
-            mkdir -p {params.bamdir}
+            mkdir -p {params.bamdir} {output.bins}
             ln -sf $(realpath {input.bam}) {params.bamdir}/
-            run_comebin.sh -a {input.assembly} -p {params.bamdir} -o {params.outdir} -t {threads} > {log} 2>&1
-            mkdir -p {output.bins}
+            run_comebin.sh -a {input.assembly} -p {params.bamdir} -o {params.outdir} -t {threads} > {log} 2>&1 \
+                || echo "WARNING: run_comebin.sh exited non-zero -- COMEBin is optional/best-effort, continuing with whatever bins (if any) it produced instead of failing this (sample, assembler)'s DAS_Tool refinement (see docstring)." >> {log}
             cp {params.outdir}/comebin_res/comebin_res_bins/*.fa {output.bins}/ 2>/dev/null \
                 || find {params.outdir}/comebin_res -name '*.fa' -exec cp {{}} {output.bins}/ \; 2>/dev/null || true
-            ls {output.bins}/*.fa >/dev/null 2>&1
+            if ! ls {output.bins}/*.fa >/dev/null 2>&1; then
+                echo "WARNING: COMEBin produced zero usable bins for this (sample, assembler) -- contributing nothing to the DAS_Tool ensemble. See comebin.log for details." >> {log}
+            fi
             """
