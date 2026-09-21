@@ -13,10 +13,12 @@ def load_samples(sheet_path):
     with open(sheet_path) as fh:
         reader = csv.DictReader(fh, delimiter="\t")
         for row in reader:
-            sample = row["sample"]
-            has_fastq = bool(row.get("fastq", "").strip())
-            has_pod5 = bool(row.get("pod5_dir", "").strip())
-            barcode = row.get("barcode", "").strip()
+            sample = (row.get("sample") or "").strip()
+            if not sample:
+                continue
+            has_fastq = bool((row.get("fastq") or "").strip())
+            has_pod5 = bool((row.get("pod5_dir") or "").strip())
+            barcode = (row.get("barcode") or "").strip()
             if has_fastq == has_pod5:
                 raise ValueError(
                     f"Sample {sample!r} in {sheet_path!r} must set exactly one of "
