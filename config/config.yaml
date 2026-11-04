@@ -11,15 +11,16 @@ outdir: "pipeline-out" # output directory
 threads: 16
 
 ## basecalling (Basecalling/)
-dorado_bin: "/path/to/dorado-x.y.z-linux-x64/bin/dorado"
-dorado_model: "sup" # shorthand (fast|hac|sup) auto-resolves the latest model
+dorado_bin: "/storage-local/amuszynska/Dorado/dorado-2.1.2-linux-x64/bin/dorado"
+dorado_model: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0" # shorthand (fast|hac|sup) auto-resolves the latest model
   # for the input's detected chemistry, or an explicit versioned model name
   # (see `dorado models list`) for reproducibility across runs.
-dorado_modified_bases: "" # empty = simplex-only (default). Comma-separated
+dorado_modified_bases: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0_4mC_5mC@v1,dna_r10.4.1_e8.2_400bps_sup@v5.2.0_6mA@v1"
   # modified-base tags appended to dorado_model (e.g. "5mC", "6mA", or
   # "5mC,6mA") to call methylation in the same basecalling pass - see
   # `dorado basecaller --help` for the full list your model supports.
 dorado_include_fail: true # include pod5_fail/ alongside pod5_pass/
+dorado_barcode_kit: "SQK-RBK114-96"
 dorado_device: "cuda:all" # dorado's own --device syntax: "cpu", "cuda:all",
   # "cuda:0", "cuda:0,1", or "auto".
 
