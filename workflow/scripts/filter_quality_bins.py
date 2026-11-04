@@ -7,9 +7,16 @@ import csv
 import glob
 import os
 import shutil
+import sys
 
 with open(snakemake.input.checkm2_passed_list) as fh:
     checkm2_passed = [line.strip() for line in fh if line.strip()]
+
+if not checkm2_passed:
+    os.makedirs(snakemake.output.finalbins, exist_ok=True)
+    open(snakemake.output.passed_list, "w").close()
+    print("No CheckM2-passed bins to GUNC-filter.", file=sys.stderr)
+    raise SystemExit(0)
 
 matches = glob.glob(os.path.join(snakemake.input.gunc_report, "*maxCSS_level.tsv"))
 if not matches:
@@ -36,4 +43,4 @@ with open(snakemake.output.passed_list, "w") as fh:
     fh.write("\n".join(passed) + ("\n" if passed else ""))
 
 if not passed:
-    raise SystemExit("No bins passed quality filtering (completeness/contamination and GUNC).")
+    print ("No bins passed quality filtering (completeness/contamination and GUNC).", file=sys.stderr)
