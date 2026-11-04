@@ -50,7 +50,7 @@ rule contig_abundance:
     conda:
         config["main_env"]
     shell:
-        "jgi_summarize_bam_contig_depths --outputDepth {output} {input.bam}"
+        "jgi_summarize_bam_contig_depths --percentIdentity 70 --outputDepth {output} {input.bam}"
 
 
 rule metabat2_binning:
