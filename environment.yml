@@ -1,4 +1,4 @@
-name: pipeline-original
+name: pipeline
 channels:
   - conda-forge
   - bioconda
