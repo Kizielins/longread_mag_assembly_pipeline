@@ -8,7 +8,7 @@
 - [COMEBin](https://github.com/ziyewang/COMEBin)
 - [DAS_Tool](https://github.com/cmks/DAS_Tool)
 - [flye/metaflye](https://github.com/fenderglass/Flye)
-- [gtdbtk](https://github.com/Ecogenomics/GTDBTk) -- pinned to `2.4.1` against the GTDB **R226** reference database
+- [gtdbtk](https://github.com/Ecogenomics/GTDBTk) -- pinned to `2.6.1` against the GTDB **R226** reference database
 - [GUNC](https://github.com/grp-bork/gunc)
 - [HMMER](http://hmmer.org/)
 - [hostile](https://github.com/bede/hostile)
