@@ -19,6 +19,7 @@ dependencies:
   - gunc=1.1.1
   - chopper=0.13.0
   - nanoplot=1.47.1
+  - plotly=6.9.0
   - hostile=2.0.2
   - medaka=2.1.1
   - pytorch-gpu
