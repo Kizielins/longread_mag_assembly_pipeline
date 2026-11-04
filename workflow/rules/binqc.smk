@@ -39,13 +39,14 @@ rule checkm2_predict:
         indir=f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/polished-bins",
         outdir=f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/checkm2-result",
         db=expand_path(config["checkm2_db"]),
+        bin=expand_path(config["checkm2_bin"]),
     threads: config["threads"]
     conda:
         config["checkm2_env"]
     log:
         f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/checkm2-result.log",
     shell:
-        "checkm2 predict --input {params.indir} --output-directory {params.outdir} "
+        "{params.bin} predict --input {params.indir} --output-directory {params.outdir} "
         "--database_path {params.db} --extension fasta --threads {threads} --force > {log} 2>&1"
 
 rule filter_checkm2_bins:
@@ -80,9 +81,14 @@ rule gunc_run:
     log:
         f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/gunc-result.log",
     shell:
-        "mkdir -p {output} && "
-        "gunc run --input_dir {input.bins} --file_suffix .fasta --out_dir {output} --db_file {params.db} "
-        "--threads {threads} > {log} 2>&1"
+        """
+        mkdir -p {output}
+        if [ -z "$(ls -A {input.bins}/*.fasta 2>/dev/null)" ]; then
+            echo "No CheckM2-passed bins; skipping GUNC." > {log}
+        else 
+            gunc run --input_dir {input.bins} --file_suffix .fasta --out_dir {output} --db_file {params.db} --threads {threads} > {log} 2>&1
+        fi
+        """
 
 rule barrnap_predict:
     """5S/16S/23S rRNA detection, for MIMAG high-quality status. """
