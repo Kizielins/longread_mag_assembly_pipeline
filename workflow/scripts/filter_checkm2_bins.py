@@ -3,6 +3,7 @@
 import csv
 import os
 import shutil
+import sys
 
 min_completeness = float(snakemake.params.min_completeness)
 max_contamination = float(snakemake.params.max_contamination)
@@ -27,7 +28,7 @@ with open(snakemake.output.passed_list, "w") as fh:
     fh.write("\n".join(passed) + ("\n" if passed else ""))
 
 if not passed:
-    raise SystemExit(
+    print (
         "No bins passed the quality filter "
-        f"(completeness >= {min_completeness}%, contamination <= {max_contamination}%)."
+        f"(completeness >= {min_completeness}%, contamination <= {max_contamination}%).",file=sys.stderr,
     )
