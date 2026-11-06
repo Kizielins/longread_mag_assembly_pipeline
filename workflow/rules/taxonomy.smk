@@ -24,7 +24,7 @@ rule gtdbtk_classify:
         """
         GTDBTK_DATA_PATH={params.data_path} gtdbtk classify_wf --genome_dir {input.genome_dir} -x fasta \
             --out_dir {output.result} --cpus {threads} --pplacer_cpus {params.pplacer_cpus} --skip_ani_screen > {log} 2>&1
-        cat {output.result}/classify/gtdbtk.*summary.tsv | grep -v '^user_genome' \
+        {{ cat {output.result}/classify/gtdbtk.*summary.tsv 2>/dev/null | grep -v '^user_genome' || true; }} \
             | awk -F"\\t" '{{print $1"\\t"$2}}' > {output.taxa}
         """
 
