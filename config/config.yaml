@@ -76,7 +76,7 @@ mimag_min_completeness: 90
 mimag_max_contamination: 5
 mimag_min_trna: 18
 
-## strain phasing (05-StrainPhasing, Track B)
+## strain phasing (06-StrainPhasing, Track B)
 run_strain_phasing: false
 
 ## conda environments
