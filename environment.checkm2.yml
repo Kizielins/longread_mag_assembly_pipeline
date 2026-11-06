@@ -7,4 +7,4 @@ channels:
 dependencies:
   - checkm2=1.1.0
   - nanomotif=1.1.2
-  - ont-modkit
+  - ont-modkit=0.6.4
