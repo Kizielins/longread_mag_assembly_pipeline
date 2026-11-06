@@ -36,7 +36,7 @@ rule checkm2_predict:
     output:
         f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/checkm2-result/quality_report.tsv",
     params:
-        indir=f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/polished-bins",
+        indir=f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/checkm2-input",
         outdir=f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/checkm2-result",
         db=expand_path(config["checkm2_db"]),
     threads: config["threads"]
@@ -45,8 +45,12 @@ rule checkm2_predict:
     log:
         f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/checkm2-result.log",
     shell:
-        "checkm2 predict --input {params.indir} --output-directory {params.outdir} "
-        "--database_path {params.db} --extension fasta --threads {threads} --force > {log} 2>&1"
+        """
+        rm -rf {params.indir} && mkdir -p {params.indir}
+        for f in {input.bins}; do ln -sf "$(realpath "$f")" {params.indir}/; done
+        checkm2 predict --input {params.indir} --output-directory {params.outdir} \
+            --database_path {params.db} --extension fasta --threads {threads} --force > {log} 2>&1
+        """
 
 rule filter_checkm2_bins:
     """Completeness/contamination filter"""
@@ -64,6 +68,8 @@ rule filter_checkm2_bins:
     params:
         min_completeness=config["min_completeness"],
         max_contamination=config["max_contamination"],
+    conda:
+        config["main_env"]
     script:
         "../scripts/filter_checkm2_bins.py"
 
@@ -130,5 +136,7 @@ rule filter_quality_bins:
     output:
         passed_list=f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/passed_bins.list",
         finalbins=directory(f"{OUTDIR}/04-BinQC/{{sample}}/{{assembler}}/staging/passed-bins"),
+    conda:
+        config["main_env"]   
     script:
         "../scripts/filter_quality_bins.py"
