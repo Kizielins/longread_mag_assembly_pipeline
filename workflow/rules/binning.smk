@@ -67,7 +67,9 @@ rule metabat2_binning:
         """
         mkdir -p {output.bins}
         metabat2 -t {threads} -i {input.assembly} -o {output.bins}/bin -a {input.depth} > {output.log}
-        grep -q "formed" {output.log}
+        if ! grep -q "formed" {output.log}; then
+            echo "WARNING: metabat2 produced zero bins for this (sample, assembler) - contributing nothing to the DAS_Tool ensemble. See bin.log for details." >> {output.log}
+        fi
         """
 
 
