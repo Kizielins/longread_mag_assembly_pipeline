@@ -35,6 +35,7 @@ import csv
 import glob
 import os
 
+
 os.makedirs(snakemake.output.finalbins, exist_ok=True)
 
 with open(snakemake.input.passed_list) as fh:
@@ -93,14 +94,28 @@ for rrna_path in snakemake.input.rrna:
         "23S": "23S_rRNA" in content,
     }
 
-## tRNAscan-SE output (binqc.smk::trnascan_predict): bin_id -> tRNA gene count.
-## Standard legacy tabular output has a 3-line header before data rows.
+## tRNAscan-SE output (binqc.smk::trnascan_predict): bin_id -> tRNA GENE count.
+## Standard legacy tabular output has a 3-line header before data rows; columns
+## (whitespace-split) are Name/#/Begin/End/Type/Anticodon/IntronBegin/IntronEnd/
+## Score/Note. MIMAG wants real tRNA genes, so Undet/Sup Type calls and
+## pseudogene-flagged (Note contains "pseudo") rows are excluded rather than
+## counted.
 trna_count = {}
 for trna_path in snakemake.input.trna:
     bin_id = os.path.basename(trna_path).removesuffix(".trna.txt")
     with open(trna_path) as fh:
         lines = fh.readlines()
-    trna_count[bin_id] = sum(1 for line in lines[3:] if line.strip())
+    count = 0
+    for line in lines[3:]:
+        fields = line.split()
+        if len(fields) < 5:
+            continue
+        trna_type = fields[4]
+        note = fields[9] if len(fields) > 9 else ""
+        if trna_type in ("Undet", "Sup") or "pseudo" in note.lower():
+            continue
+        count += 1
+    trna_count[bin_id] = count
 
 ## GUNC (binqc.smk::gunc_run): bin_id -> clade separation score.
 gunc_css = {}
