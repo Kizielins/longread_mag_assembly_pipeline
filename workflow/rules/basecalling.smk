@@ -93,6 +93,8 @@ rule barcode_bam:
         demux_dir=rules.dorado_demux.output.outdir,
     output:
         bam=f"{OUTDIR}/Basecalling/{{run}}/demux/{{barcode}}.bam",
+    conda:
+        config["main_env"]
     log:
         f"{OUTDIR}/Basecalling/{{run}}/demux/{{barcode}}.bam.log",
     shell:
@@ -138,6 +140,8 @@ rule barcode_fastq:
     params:
         gzip=config.get("gzip_bin", "pigz"),
     threads: 4
+    conda:
+        config["main_env"]
     log:
         f"{OUTDIR}/Basecalling/{{run}}/demux/{{barcode}}.fastq.log",
     shell:
