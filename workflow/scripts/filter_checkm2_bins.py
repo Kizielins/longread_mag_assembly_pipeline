@@ -21,6 +21,11 @@ with open(snakemake.input.checkm2_report) as fh:
             continue
         bin_id, completeness, contamination = row[0], float(row[1]), float(row[2])
         if completeness >= min_completeness and contamination <= max_contamination:
+            if bin_id not in bins_by_id:
+                raise SystemExit(
+                    f"CheckM2 reported {bin_id!r}, which is not in this run's refined bin set "
+                    f"- stale file in checkm2-input/?"
+                )
             passed.append(bin_id)
             shutil.copy(bins_by_id[bin_id], os.path.join(snakemake.output.finalbins, f"{bin_id}.fasta"))
 
