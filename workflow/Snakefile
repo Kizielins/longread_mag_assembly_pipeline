@@ -5,8 +5,9 @@ Run with, e.g.:
     snakemake --configfile config/config.yaml --config samples_sheet=samples.tsv outdir=pipeline-out \
         --use-conda --cores 16
 """
+import os
 
-configfile: "config/config.yaml"
+configfile: os.path.join(workflow.basedir, "..", "config", "config.yaml")
 
 OUTDIR = config["outdir"]
 
