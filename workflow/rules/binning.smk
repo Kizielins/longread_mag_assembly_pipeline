@@ -65,6 +65,7 @@ rule metabat2_binning:
         config["main_env"]
     shell:
         """
+        mkdir -p {output.bins}
         metabat2 -t {threads} -i {input.assembly} -o {output.bins}/bin -a {input.depth} > {output.log}
         grep -q "formed" {output.log}
         """
